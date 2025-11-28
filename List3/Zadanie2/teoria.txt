@@ -1,0 +1,12 @@
+k = min (k,n-k  )
+   T[0,k]
+   t[all] = 1
+   for i to n
+      d= K
+      if i≤k
+         T[i]=1
+         d=i-1
+      for j = d down to 1
+         T[j] = t[j]t[j+1?]
+
+   
