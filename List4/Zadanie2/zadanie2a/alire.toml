@@ -1,0 +1,17 @@
+name = "zadanie2a"
+description = ""
+version = "0.1.0-dev"
+
+authors = ["Michal Rudzik"]
+maintainers = ["Michal Rudzik <example@example.com>"]
+licenses = "MIT OR Apache-2.0 WITH LLVM-exception"
+website = ""
+tags = []
+
+executables = ["zadanie2a"]
+
+[[depends-on]]
+ada_library = "~0.1.0-dev"
+
+[[pins]]
+ada_library = { path='../../../ada_library' }
