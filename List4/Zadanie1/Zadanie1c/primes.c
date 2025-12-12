@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "primes.h"
 
 void Sieve(unsigned *P, unsigned n){
     for (unsigned i=2; i<=n; i++){
