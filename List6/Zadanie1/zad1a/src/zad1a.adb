@@ -1,7 +1,8 @@
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
-with Ada.Command_Line; use Ada.Command_Line;
 with Ada.Unchecked_Deallocation;
+with Ada.Command_Line; use Ada.Command_Line;
+
 
 procedure Zad1a is
    type Arr is array (Positive range <>) of Integer;
@@ -13,7 +14,7 @@ procedure Zad1a is
    begin
       for i in 1 .. N loop
          for j in i + 1 .. N loop
-            if abs(i - j) = abs(Tab(i) - Tab(j)) then [cite: 339]
+            if abs(i - j) = abs(Tab(i) - Tab(j)) then
                return False;
             end if;
          end loop;
@@ -59,23 +60,12 @@ procedure Zad1a is
    Tab : Arr_Ptr;
    Count : Integer := 0;
 begin
-   if Argument_Count /= 1 then [cite: 368]
-      Put_Line("Zla liczba argumentow. Podaj n.");
+   if Argument_Count /= 1 then
+      Put_Line ("Zla liczba argumentow");
       return;
    end if;
 
-   begin
-      N := Integer'Value(Argument(1)); [cite: 368]
-   exception
-      when Constraint_Error =>
-         Put_Line("Zly typ zmiennej");
-         return;
-   end;
-
-   if N < 1 then
-      Put_Line("Liczba rozwiazan: 0");
-      return;
-   end if;
+   N := Integer'Value(Argument(1));
 
    Tab := new Arr(1 .. N);
    for i in 1 .. N loop 
@@ -83,16 +73,16 @@ begin
    end loop;
 
    loop
-      if Is_Valid(Tab, N) then [cite: 342, 367]
-         Count := Count + 1; [cite: 368]
+      if Is_Valid(Tab, N) then
+         Count := Count + 1;
          for i in 1 .. N loop 
             Put(Tab(i), 2); 
          end loop;
          New_Line;
       end if;
-      exit when not Next_Permutation(Tab, N); [cite: 342, 367]
+      exit when not Next_Permutation(Tab, N);
    end loop;
 
-   Put_Line("Number of solutions: " & Integer'Image(Count)); [cite: 368, 378]
+   Put_Line("Liczba rozwiazan: " & Integer'Image(Count));
    Free(Tab);
 end Zad1a;

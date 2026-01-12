@@ -1,14 +1,14 @@
-with Ada.Text_IO;         use Ada.Text_IO;
+with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
-with list;                use list;
+with list; use list;
 
 procedure Zad1a is
-   L       : ListT;
+   L : ListT;
    Running : Boolean := True;
-   Buffer  : String (1 .. 100);
-   Last    : Natural;
-   R, I    : Integer;
-   Len     : Integer;
+   Buffer : String (1 .. 100);
+   Last : Natural;
+   R, I : Integer;
+   Len : Integer;
 
 begin
    while Running loop

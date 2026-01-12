@@ -137,9 +137,12 @@ int main() {
     }
 
     if (l != NULL) {
-        clean(l);
-        free(l);
+        if (l->length != 0){
+            clean(l);
+        }
+        free(l);    
     }
+
 
     return 0;
 }

@@ -135,4 +135,5 @@ void clean(list l){
     }
     l->first = NULL;
     l->last = NULL;
+    l->length = 0;
 }

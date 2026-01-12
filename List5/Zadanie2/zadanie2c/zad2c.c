@@ -13,7 +13,7 @@ double findzero (functype f, double a, double b, double eps){
         if (f(c) == 0.0){
             return c;
         }
-        if (f(a)*f(c)<0){
+        if (f(a)*f(c)<0.0){
             b = c;
         }else{
             a = c;
