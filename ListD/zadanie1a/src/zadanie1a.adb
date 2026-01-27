@@ -41,34 +41,69 @@ begin
       Put_Line("Zla liczba argumentow");
       return;
    end if;
-   Open(InFile, In_File, Argument(1));
+   
+   begin
+      Open(InFile, In_File, Argument(1));
+   exception
+      when Name_Error =>
+         Put_Line("Plik nie istnieje");
+         return;
+   end;
+   begin
+      if End_Of_File(InFile) then
+         Put_Line("Plik jest pusty");
+         return;
+      end if;
    Get(InFile, D_size);
+   if D_size <= 0 then
+      Put_Line("Liczba nominalow musi byc dodatnia");
+      Close(InFile);
+      return;
+   end if;
+
    Denom := new Arr(1 .. D_size);
    Denom_Count := new Arr(1 .. D_size);
    Denom_Count.all := (others => 0);
+   
    for i in 1 .. D_size loop
-      Get(InFile, Temp);
-      Denom(i) := Temp;
-      if Temp < 0 then
-         Put_Line("Zly typ argumentu");
-         Free(Denom);
-         Free(Denom_Count);
-         return;
+      if End_Of_File(InFile) then
+         raise End_Error;
       end if;
+      Get(InFile, Temp);
+      if Temp <= 0 then
+         Put_Line("Nominal musi byc dodatni");
+         Close(InFile);
+         goto Cleanup;
+      end if;
+      Denom(i) := Temp;
    end loop;
-   Close(InFile);   
+   Close(InFile);
+
+   exception
+      when Data_Error =>
+         Put_Line("Zly typ zmiennych w pliku");
+         goto Cleanup;
+      when End_Error =>
+         Put_Line("Zla ilosc nominalow w pliku");
+         goto Cleanup;
+   end;
+
    MaxChange := 0;
    for i in 2 .. Argument_Count loop
-      Temp := Integer'Value(Argument(i));
-      if MaxChange < Temp then
-         MaxChange := Temp;
-      end if;
-      if Temp < 0 then
-         Put_Line("Zly typ argumentu");
-         Free(Denom);
-         Free(Denom_Count);
-         return;
-      end if;
+      begin
+         Temp := Integer'Value(Argument(i));
+         if MaxChange < Temp then
+            MaxChange := Temp;
+         end if;
+         if Temp < 0 then
+            Put_Line("Zly typ argumentu");
+            goto Cleanup;
+         end if;
+      exception
+         when Constraint_Error =>
+            Put_Line("Zly typ argumentu");
+            goto Cleanup;
+      end;
    end loop;
 
    Cost := new Arr(0 .. MaxChange);
@@ -97,9 +132,11 @@ begin
          end loop;
       end if;
    end loop;
+   <<Cleanup>>
+   if Is_Open(InFile) then Close(InFile); end if;
+   if Denom_Count /= null then Free(Denom_Count); end if;
+   if Denom /= null then Free(Denom); end if;
+   if Cost /= null then Free(Cost); end if;
+   if Used /= null then Free(Used); end if;
 
-   Free(Denom_Count);
-   Free(Cost);
-   Free(Used);
-   Free(Denom);
 end Zadanie1a;

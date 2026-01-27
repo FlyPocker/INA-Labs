@@ -24,6 +24,7 @@ void CalculateChange(int* C, int* U, int* d, int C_size, int d_size) {
 
 int main(int argc, char *argv[]) {
     int MaxChange, Temp, D_size;
+    int *Denom = NULL, *Denom_Count = NULL, *Cost = NULL, *Used = NULL;
     FILE *InFile;
 
     if (argc < 2) {
@@ -34,45 +35,51 @@ int main(int argc, char *argv[]) {
     InFile = fopen(argv[1], "r");
     if (InFile == NULL) return -1;
 
-    fscanf(InFile, "%d", &D_size);
+    if(fscanf(InFile, "%d", &D_size)!=1){
+        printf("Zly typ zmiennych w pliku\n");
+        fclose(InFile);
+        return -1;
+    }
+    if(D_size <= 0){
+        printf("Zly typ zmiennej w pliku, musza byc dodatnie\n");
+        fclose(InFile);
+        return -1;
+    }
 
-    int *Denom = (int*)malloc((D_size + 1) * sizeof(int));
-    int *Denom_Count = (int*)malloc((D_size + 1) * sizeof(int));
+    Denom = (int*)malloc((D_size + 1) * sizeof(int));
+    Denom_Count = (int*)malloc((D_size + 1) * sizeof(int));
 
     for (int i = 1; i <= D_size; i++) {
-        fscanf(InFile, "%d", &Temp);
-        if (Temp < 0){
-            printf("Zly typ zmiennej\n");
-            free(Denom_Count);
-            free(Denom);
-            return -1;
+        if (fscanf(InFile, "%d", &Temp)!=1){
+            printf("Zly typ zmiennej w pliku");
+            goto cleanup;
+        }
+        if (Temp <= 0){
+            printf("Zly typ zmiennej w pliku, musza byc dodatnie\n");
+            goto cleanup;
         }
         Denom[i] = Temp;
         Denom_Count[i] = 0;
     }
     fclose(InFile);
-
+    InFile = NULL;
     MaxChange = 0;
     for (int i = 2; i < argc; i++) {
         if (sscanf(argv[i], "%d", &Temp) != 1) {
-            printf("Zly typ zmiennej\n");
-            free(Denom_Count);
-            free(Denom);
-            return -1;
+            printf("Zly typ argumentu\n");
+            goto cleanup;
         }
         if (Temp < 0){
-            printf("Zly typ zmiennej\n");
-            free(Denom_Count);
-            free(Denom);
-            return -1;
+            printf("Zly typ argumentu, musi byc dodatni\n");
+            goto cleanup;
         }
         if (MaxChange < Temp) {
             MaxChange = Temp;
         }
     }
 
-    int *Cost = (int*)malloc((MaxChange + 1) * sizeof(int));
-    int *Used = (int*)malloc((MaxChange + 1) * sizeof(int));
+    Cost = (int*)malloc((MaxChange + 1) * sizeof(int));
+    Used = (int*)malloc((MaxChange + 1) * sizeof(int));
 
     for (int i = 0; i <= MaxChange; i++) {
         Cost[i] = -1;
@@ -101,10 +108,11 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-
-    free(Denom_Count);
-    free(Cost);
-    free(Used);
-    free(Denom);
-    return 0;
+    cleanup:
+        if (InFile) fclose(InFile);
+        free(Denom_Count);
+        free(Cost);
+        free(Used);
+        free(Denom);
+        return 0;
 }
