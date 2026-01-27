@@ -36,6 +36,9 @@ def main():
             line = in_file.readline()
             if line:
                 Temp = int(line.strip())
+                if Temp < 0:
+                    print("Zly typ zmiennej")
+                    return
                 Denom[i] = Temp
         in_file.close()
     except (ValueError, FileNotFoundError):
@@ -45,6 +48,9 @@ def main():
     for i in range(2, len(sys.argv)):
         try:
             Temp = int(sys.argv[i])
+            if Temp < 0:
+                print("Zly typ zmiennej")
+                return
             if MaxChange < Temp:
                 MaxChange = Temp
         except ValueError:

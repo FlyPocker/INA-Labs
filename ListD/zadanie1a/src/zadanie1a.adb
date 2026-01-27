@@ -49,6 +49,12 @@ begin
    for i in 1 .. D_size loop
       Get(InFile, Temp);
       Denom(i) := Temp;
+      if Temp < 0 then
+         Put_Line("Zly typ argumentu");
+         Free(Denom);
+         Free(Denom_Count);
+         return;
+      end if;
    end loop;
    Close(InFile);   
    MaxChange := 0;
@@ -56,6 +62,12 @@ begin
       Temp := Integer'Value(Argument(i));
       if MaxChange < Temp then
          MaxChange := Temp;
+      end if;
+      if Temp < 0 then
+         Put_Line("Zly typ argumentu");
+         Free(Denom);
+         Free(Denom_Count);
+         return;
       end if;
    end loop;
 

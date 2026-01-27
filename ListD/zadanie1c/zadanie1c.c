@@ -41,6 +41,12 @@ int main(int argc, char *argv[]) {
 
     for (int i = 1; i <= D_size; i++) {
         fscanf(InFile, "%d", &Temp);
+        if (Temp < 0){
+            printf("Zly typ zmiennej\n");
+            free(Denom_Count);
+            free(Denom);
+            return -1;
+        }
         Denom[i] = Temp;
         Denom_Count[i] = 0;
     }
@@ -50,6 +56,14 @@ int main(int argc, char *argv[]) {
     for (int i = 2; i < argc; i++) {
         if (sscanf(argv[i], "%d", &Temp) != 1) {
             printf("Zly typ zmiennej\n");
+            free(Denom_Count);
+            free(Denom);
+            return -1;
+        }
+        if (Temp < 0){
+            printf("Zly typ zmiennej\n");
+            free(Denom_Count);
+            free(Denom);
             return -1;
         }
         if (MaxChange < Temp) {
