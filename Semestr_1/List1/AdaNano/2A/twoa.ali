@@ -1,0 +1,89 @@
+V "GNAT Lib v14"
+M P W=b
+P ZX
+
+RN
+RV NO_FLOATING_POINT
+RV NO_IO
+RV NO_DYNAMIC_SIZED_OBJECTS
+
+U twoa%b		twoa.ada		73f98c92 NE OO SU
+W ada%s			ada.ads			ada.ali
+W ada.float_text_io%s	a-flteio.ads		a-flteio.ali
+W ada.numerics%s	a-numeri.ads		a-numeri.ali
+W ada.numerics.elementary_functions%s  a-nuelfu.ads  a-nuelfu.ali
+Z ada.strings.text_buffers%s  a-sttebu.adb	a-sttebu.ali
+W ada.text_io%s		a-textio.adb		a-textio.ali
+Z system.concat_2%s	s-conca2.adb		s-conca2.ali
+Z system.concat_4%s	s-conca4.adb		s-conca4.ali
+Z system.img_flt%s	s-imgflt.ads		s-imgflt.ali
+
+D ada.ads		20240801081713 76789da1 ada%s
+D a-except.ads		20240801081713 e7970cd9 ada.exceptions%s
+D a-flteio.ads		20240801081713 e18a47a0 ada.float_text_io%s
+D a-ioexce.ads		20240801081713 40018c65 ada.io_exceptions%s
+D a-numeri.ads		20240801081713 84bea7a3 ada.numerics%s
+D a-nuelfu.ads		20240801081713 03e83d1c ada.numerics.elementary_functions%s
+D a-ngelfu.ads		20240801081713 5506716e ada.numerics.generic_elementary_functions%s
+D a-stream.ads		20240801081713 119b8fb3 ada.streams%s
+D a-string.ads		20240801081713 90ac6797 ada.strings%s
+D a-sttebu.ads		20240801081713 f1ad67a2 ada.strings.text_buffers%s
+D a-stuten.ads		20240801081713 c6ced0ae ada.strings.utf_encoding%s
+D a-tags.ads		20240801081713 9eaa38c6 ada.tags%s
+D a-textio.ads		20240801081713 34ef47de ada.text_io%s
+D a-tiflio.ads		20240801081713 48a0360d ada.text_io.float_io%s
+D a-unccon.ads		20240801081713 0e9b276f ada.unchecked_conversion%s
+D interfac.ads		20240801081713 9111f9c1 interfaces%s
+D i-cstrea.ads		20240801081713 ffd01b9d interfaces.c_streams%s
+D system.ads		20240801081714 14286b0f system%s
+D s-conca2.ads		20240801081713 b5fb73f7 system.concat_2%s
+D s-conca4.ads		20240801081713 33f85f3e system.concat_4%s
+D s-crtl.ads		20240801081713 beb39b9e system.crtl%s
+D s-exctab.ads		20240801081713 91bef6ef system.exception_table%s
+D s-ficobl.ads		20240801081713 dc5161d4 system.file_control_block%s
+D s-imager.ads		20240801081713 45c7157d system.image_r%s
+D s-imageu.ads		20240801081713 b0b50650 system.image_u%s
+D s-imgflt.ads		20240801081713 d12816b5 system.img_flt%s
+D s-imguns.ads		20240801081713 c4e23690 system.img_uns%s
+D s-parame.ads		20250328105041 a1aeab5c system.parameters%s
+D s-powflt.ads		20240801081713 a51ab9b8 system.powten_flt%s
+D s-putima.ads		20240801081713 17291fe4 system.put_images%s
+D s-secsta.ads		20240801081713 578279f5 system.secondary_stack%s
+D s-soflin.ads		20240801081713 df77073e system.soft_links%s
+D s-stache.ads		20240801081713 0b81c1fe system.stack_checking%s
+D s-stalib.ads		20240801081713 1c9580f6 system.standard_library%s
+D s-stoele.ads		20240801081713 ccded4e8 system.storage_elements%s
+D s-traent.ads		20240801081713 c81cbf8c system.traceback_entries%s
+D s-unstyp.ads		20240801081713 fa2a7f59 system.unsigned_types%s
+D s-valspe.ads		20240801081714 b0fcd073 system.val_spec%s
+D s-vauspe.ads		20240801081714 89269ba5 system.value_u_spec%s
+D s-vs_uns.ads		20240801081714 e7f47a27 system.vs_uns%s
+D s-wchcon.ads		20240801081714 d9032363 system.wch_con%s
+D twoa.ada		20251021093859 a574b1f0 twoa%b
+G a e
+G c Z b b [twoa standard 5 11 none]
+X 1 ada.ads
+16K9*Ada 20e8 42|1r6 1r23 2r6 2r29 3r6 3r45
+X 3 a-flteio.ads
+20K13*Float_Text_IO[14|46] 42|2w10 2r33
+X 5 a-numeri.ads
+16K13*Numerics 35e17 42|3r10 3r49
+X 6 a-nuelfu.ads
+18K22*Elementary_Functions[7|39] 42|3w19 3r58
+X 7 a-ngelfu.ads
+53V13*Sqrt{float} 42|29s22[6|18] 30s22[6|18]
+X 13 a-textio.ads
+58K13*Text_IO 785e16 42|1w10 1r27
+515U14*Put 42|13s4 15s4 17s4
+565U14*Put_Line 42|20s7 24s10 27s10 31s10
+X 14 a-tiflio.ads
+64U14*Get 42|14s4[3|20] 16s4[3|20] 18s4[3|20]
+X 42 twoa.ada
+5U11*Twoa 5b11 34l5 34t9
+6f4 a{float} 14m8 19r7 22r29 26r28 29r43 30r43
+7f4 b{float} 16m8 22r15 22r19 26r17 29r18 30r18
+8f4 c{float} 18m8 22r33
+9f4 delt{float} 22m7 23r10 25r13 29r27 30r27
+10f4 x1{float} 26m10 27r61 29m10 31r57
+11f4 x2{float} 30m10 31r86
+

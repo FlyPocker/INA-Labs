@@ -1,0 +1,11 @@
+name = "threea"
+description = ""
+version = "0.1.0-dev"
+
+authors = ["Michal Rudzik"]
+maintainers = ["Michal Rudzik <example@example.com>"]
+licenses = "Apache-2.0"
+website = ""
+tags = []
+
+executables = ["threea"]
