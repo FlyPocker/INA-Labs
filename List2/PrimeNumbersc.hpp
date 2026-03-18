@@ -8,7 +8,7 @@ class PrimeNumbers {
         std::vector<bool> isPrime;
     public:
         int getNumber(int m);
-
+        void sievePrime();
         PrimeNumbers(int n);
 
         friend std::ostream& operator<<(std::ostream& out, PrimeNumbers* t);

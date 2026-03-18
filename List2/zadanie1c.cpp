@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
         std::cout << argv[1] << " nieprawidlowa dana" << std::endl;
         return 0;
     }
-
+    primes->sievePrime();
     for (int i = 2; i < argc; i++) {
         try {
             int m = std::stoi(argv[i]);

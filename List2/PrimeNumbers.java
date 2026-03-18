@@ -10,23 +10,26 @@ public class PrimeNumbers {
                 m -= 1;
             }
         }
-        if (m==0){
+        if (m==0 && isPrime.length >1){
             return i;
         }
         return -1;
     }
 
-    public PrimeNumbers(int n){
-        isPrime = new boolean[n+1];
-        for (int i=2;i<=n;i++){
+    public void sievePrime(){
+        for (int i=2;i<isPrime.length;i++){
             isPrime[i] = true;
         }
-        for (int i=2;i<=n;i++){
+        for (int i=2;i<isPrime.length;i++){
             if (isPrime[i]){
-                for (int j=i+i;j<=n;j=j+i){
+                for (int j=i+i;j<isPrime.length;j=j+i){
                     isPrime[j] = false;
                 }
             }
         }
+    }
+
+    public PrimeNumbers(int n){
+        isPrime = new boolean[n+1];
     }
 }

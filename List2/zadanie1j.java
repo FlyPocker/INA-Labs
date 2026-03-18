@@ -10,6 +10,7 @@ public class zadanie1j {
         n=Integer.parseInt(args[0]);
         if (n<0){
             System.out.println(args[0] + " nieprawidłowa dana, nie może być ujemna");    
+            return;
         }
         primes=new PrimeNumbers(n);
     }
@@ -17,7 +18,7 @@ public class zadanie1j {
         System.out.println(args[0] + " nieprawidłowa dana");
         return;
     }
-    
+    primes.sievePrime();
     for (int i=1; i<args.length; i++){
         try {
             n=Integer.parseInt(args[i]);
