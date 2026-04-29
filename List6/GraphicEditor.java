@@ -1,4 +1,7 @@
+import java.util.function.Consumer;
+import java.util.function.Consumer;
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
@@ -15,7 +18,8 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.Priority;
-
+import javafx.scene.control.ColorPicker;
+import javafx.scene.paint.Color;
 /**
  * Glowna klasa edytora graficznego
  * 
@@ -37,8 +41,9 @@ public class GraphicEditor extends Application {
     private ToolType currentTool = ToolType.RECTANGLE;
     private Shape currentShape, selectedShape;
     private Polygon currentPoly = new Polygon();
-    
-    
+    private Rectangle selectionMarker;
+    private Color selectedStrokeColor = Color.WHITE;
+    private Color selectedFillColor = Color.TRANSPARENT;
     /**
      * Metoda obslugujaca okienko i zdazenia
     */
@@ -58,27 +63,47 @@ public class GraphicEditor extends Application {
 
         HBox toolBar = new HBox(10);
         toolBar.setStyle("-fx-padding: 10px; -fx-background-color: #404040;");
+        toolBar.setAlignment(Pos.CENTER);
         HBox statusBar = new HBox();
-        statusBar.setStyle("-fx-padding: 5px; -fx-background-color: #353535");
+        statusBar.setStyle("-fx-padding: 5px; -fx-background-color: #303030");
 
+        String btnStyle = "-fx-font-size: 14px; -fx-padding: 5px 10px; -fx-cursor: hand;";
         Label currentToolLabel = new Label("Aktywne narzedzie: "+ currentTool.name());
         currentToolLabel.setTextFill(Color.WHITE);
+        currentToolLabel.setStyle("-fx-font-family: 'Verdana'; -fx-font-weight: bold; -fx-font-size: 14px;");
         Button btnRect = new Button("Prostokat");
         btnRect.setOnAction(e -> changeTool(ToolType.RECTANGLE, currentToolLabel));
+        btnRect.setStyle(btnStyle);
         Button btnCirc = new Button("Okrag");
         btnCirc.setOnAction(e -> changeTool(ToolType.CIRCLE, currentToolLabel));
+        btnCirc.setStyle(btnStyle);
         Button btnPoly = new Button("Wielokat");
         btnPoly.setOnAction(e -> changeTool(ToolType.POLYGON, currentToolLabel));
-        
+        btnPoly.setStyle(btnStyle);
+
+        HBox strokePickerBox = createPicker("Stroke:", (Color) Color.WHITE, color -> {
+            if(selectedShape != null) selectedShape.setStroke(color);
+            selectedStrokeColor = color;
+        });
+        HBox fillPickerBox = createPicker("Fill:", (Color) Color.TRANSPARENT, color -> {
+            if(selectedShape != null) selectedShape.setFill(color);
+            selectedFillColor = color;
+        });
+
         Button btnEdit = new Button("Edycja");
         btnEdit.setOnAction(e -> changeTool(ToolType.EDIT, currentToolLabel));
+        btnEdit.setStyle(btnStyle);
         Button btnInfo = new Button("Info");
+        btnInfo.setOnAction(e -> hideStatusBar(statusBar));
+        btnInfo.setStyle(btnStyle);
+
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        toolBar.getChildren().addAll(btnRect, btnCirc, btnPoly, spacer, btnEdit, btnInfo);
+        toolBar.getChildren().addAll(btnRect, btnCirc, btnPoly,strokePickerBox,fillPickerBox, spacer, btnEdit, btnInfo);
         statusBar.getChildren().add(currentToolLabel);
-        
+        VBox topBox = new VBox();
+        topBox.getChildren().addAll(toolBar,statusBar);
         // 1. Zaczynamy rysować
         drawingPane.setOnMousePressed(e -> {
             startX = e.getX();
@@ -98,12 +123,15 @@ public class GraphicEditor extends Application {
                     break;
                 case EDIT:
                     if (selectedShape != null){
-                        selectedShape.setStroke(Color.WHITE);
+                        drawingPane.getChildren().remove(selectionMarker);
+                        deleteSelection(selectionMarker);
                         selectedShape = null;
+                        selectionMarker = null;
                     }
                     if (e.getTarget() instanceof Shape){
                         selectedShape = (Shape) e.getTarget();
-                        selectedShape.setStroke(Color.RED);
+                        selectionMarker = createSelection(selectedShape);
+                        drawingPane.getChildren().add(selectionMarker);
                     }
                     break;
             }}
@@ -115,13 +143,13 @@ public class GraphicEditor extends Application {
             }}
             
             if(currentShape != null){
-                currentShape.setFill(Color.TRANSPARENT);
-                currentShape.setStroke(Color.WHITE); 
+                currentShape.setFill(selectedFillColor);
+                currentShape.setStroke(selectedStrokeColor); 
                 drawingPane.getChildren().add(currentShape);
             }
             if(currentPoly != null){
-                currentPoly.setFill(Color.TRANSPARENT);
-                currentPoly.setStroke(Color.WHITE);
+                currentPoly.setFill(selectedFillColor);
+                currentPoly.setStroke(selectedStrokeColor);
                 drawingPane.getChildren().add(currentPoly);
             }
 
@@ -201,9 +229,8 @@ public class GraphicEditor extends Application {
         });
 
 
-        mainPane.setTop(toolBar);
+        mainPane.setTop(topBox);
         mainPane.setCenter(drawingPane);
-
         Scene scene = new Scene(mainPane, 800, 600);
         primaryStage.setTitle("Edytor Figur");
         primaryStage.setScene(scene);
@@ -215,10 +242,65 @@ public class GraphicEditor extends Application {
         label.setText("Aktywne narzedzie: " + currentTool.name());
         currentShape = null;
         currentPoly = null;
-        selectedShape = null;
     }
 
-    public static void Main(String[] args) {
+    private void hideStatusBar(HBox bar){
+        if(bar.isVisible()){
+            bar.setVisible(false);
+            bar.setManaged(false);
+        }else{
+            bar.setManaged(true);
+            bar.setVisible(true);
+        }
+    }
+    
+    private Rectangle createSelection(Shape selectedShape){
+        Rectangle selectionMarker = new Rectangle();
+        selectionMarker.setFill(Color.TRANSPARENT);
+        selectionMarker.setStroke(Color.AQUA);
+        selectionMarker.getStrokeDashArray().addAll(5.0,5.0);
+
+        selectionMarker.setX(selectedShape.getBoundsInLocal().getMinX());
+        selectionMarker.setY(selectedShape.getBoundsInLocal().getMinY());
+        selectionMarker.setWidth(selectedShape.getBoundsInLocal().getWidth());
+        selectionMarker.setHeight(selectedShape.getBoundsInLocal().getHeight());
+
+        selectionMarker.translateXProperty().bind(selectedShape.translateXProperty());
+        selectionMarker.translateYProperty().bind(selectedShape.translateYProperty());
+        selectionMarker.scaleXProperty().bind(selectedShape.scaleXProperty());
+        selectionMarker.scaleYProperty().bind(selectedShape.scaleYProperty());
+        selectionMarker.rotateProperty().bind(selectedShape.rotateProperty());
+        selectionMarker.setMouseTransparent(true);
+        return selectionMarker;
+    }
+
+    private void deleteSelection(Rectangle selectionMarker){
+        selectionMarker.translateXProperty().unbind();
+        selectionMarker.translateYProperty().unbind();
+        selectionMarker.scaleXProperty().unbind();
+        selectionMarker.scaleYProperty().unbind();
+        selectionMarker.rotateProperty().unbind();
+    }
+
+    private HBox createPicker(String labelText, Color initialColor, Consumer<Color> onColorChanged) {
+    
+        Label label = new Label(labelText);
+        label.setStyle("-fx-text-fill: black; -fx-font-weight: bold;");
+
+        ColorPicker picker = new ColorPicker(initialColor);
+        picker.setStyle("-fx-color-label-visible: false;");
+
+        picker.setOnAction(e -> {
+            onColorChanged.accept(picker.getValue());
+        });
+
+        HBox box = new HBox(10, label, picker);
+        box.setStyle("-fx-padding: 5px;-fx-background-color: #f0f0f0;");
+        box.setAlignment(Pos.CENTER_LEFT);
+        return box;
+    }   
+
+    public static void main(String[] args) {
         launch(args);
     }
 }
