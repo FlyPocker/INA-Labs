@@ -6,14 +6,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
-import javafx.scene.transform.Rotate;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.Priority;
 
 /**
  * Glowna klasa edytora graficznego
@@ -31,10 +32,11 @@ public class GraphicEditor extends Application {
      * RECTANGLE,CIRCLE,EDIT
      */
     public enum ToolType {
-        RECTANGLE, CIRCLE, EDIT
+        RECTANGLE, CIRCLE, POLYGON, EDIT
     }
     private ToolType currentTool = ToolType.RECTANGLE;
     private Shape currentShape, selectedShape;
+    private Polygon currentPoly = new Polygon();
     
     
     /**
@@ -56,30 +58,43 @@ public class GraphicEditor extends Application {
 
         HBox toolBar = new HBox(10);
         toolBar.setStyle("-fx-padding: 10px; -fx-background-color: #404040;");
+        HBox statusBar = new HBox();
+        statusBar.setStyle("-fx-padding: 5px; -fx-background-color: #353535");
 
         Label currentToolLabel = new Label("Aktywne narzedzie: "+ currentTool.name());
         currentToolLabel.setTextFill(Color.WHITE);
-        Button btnRect = new Button("Prostokąt");
+        Button btnRect = new Button("Prostokat");
         btnRect.setOnAction(e -> changeTool(ToolType.RECTANGLE, currentToolLabel));
-        Button btnCirc = new Button("Okrąg");
+        Button btnCirc = new Button("Okrag");
         btnCirc.setOnAction(e -> changeTool(ToolType.CIRCLE, currentToolLabel));
+        Button btnPoly = new Button("Wielokat");
+        btnPoly.setOnAction(e -> changeTool(ToolType.POLYGON, currentToolLabel));
+        
         Button btnEdit = new Button("Edycja");
         btnEdit.setOnAction(e -> changeTool(ToolType.EDIT, currentToolLabel));
+        Button btnInfo = new Button("Info");
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        toolBar.getChildren().addAll(btnRect, btnCirc, btnEdit, currentToolLabel);
-
+        toolBar.getChildren().addAll(btnRect, btnCirc, btnPoly, spacer, btnEdit, btnInfo);
+        statusBar.getChildren().add(currentToolLabel);
+        
         // 1. Zaczynamy rysować
         drawingPane.setOnMousePressed(e -> {
             startX = e.getX();
             startY = e.getY();
             
-            if (e.getButton() == MouseButton.PRIMARY){
+            if(e.getButton() == MouseButton.PRIMARY){
             switch (currentTool){
                 case RECTANGLE:
                     currentShape = new Rectangle(startX, startY, 0, 0);
                     break;
                 case CIRCLE:
                     currentShape = new Circle(startX, startY, 0);
+                    break;
+                case POLYGON:
+                    if(currentPoly == null) currentPoly = new Polygon();
+                    currentPoly.getPoints().addAll(startX,startY);
                     break;
                 case EDIT:
                     if (selectedShape != null){
@@ -90,11 +105,24 @@ public class GraphicEditor extends Application {
                         selectedShape = (Shape) e.getTarget();
                         selectedShape.setStroke(Color.RED);
                     }
+                    break;
             }}
-            if (currentShape != null){
+            if(e.getButton() == MouseButton.SECONDARY){
+            switch (currentTool) {
+                case POLYGON:
+                    currentPoly = null;
+                    break;
+            }}
+            
+            if(currentShape != null){
                 currentShape.setFill(Color.TRANSPARENT);
                 currentShape.setStroke(Color.WHITE); 
                 drawingPane.getChildren().add(currentShape);
+            }
+            if(currentPoly != null){
+                currentPoly.setFill(Color.TRANSPARENT);
+                currentPoly.setStroke(Color.WHITE);
+                drawingPane.getChildren().add(currentPoly);
             }
 
             
@@ -185,9 +213,12 @@ public class GraphicEditor extends Application {
     private void changeTool(ToolType newTool, Label label){
         currentTool = newTool;
         label.setText("Aktywne narzedzie: " + currentTool.name());
+        currentShape = null;
+        currentPoly = null;
+        selectedShape = null;
     }
 
-    public static void main(String[] args) {
+    public static void Main(String[] args) {
         launch(args);
     }
 }
