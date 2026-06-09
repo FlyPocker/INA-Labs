@@ -1,3 +1,4 @@
+package JavaCode;
 /**
  * Zsynchronizowana struktura drzewa poszukiwań binarnych (BST).
  * @param <K> Typ klucza (porównywalny).
@@ -143,5 +144,78 @@ public class BT<K extends Comparable<K>, V> {
             // 3. Potem idziemy w lewo (dół ekranu)
             prettyPrintRecursive(node.left, level + 1, sb); 
         }
+    }
+
+    /**
+     * Zwraca reprezentację drzewa w formie piramidy odwróconej "do góry nogami".
+     * Korzeń znajduje się na samym dole, liście na górze.
+     */
+    public synchronized String toBottomUpPyramidString() {
+        if (root == null) {
+            return "Drzewo jest puste.";
+        }
+        
+        // 1. Znajdujemy maksymalną głębokość drzewa
+        int maxDepth = getMaxDepth(root, 0);
+        
+        // 2. Tworzymy tablicę dla każdego poziomu (od 0 do maxDepth)
+        StringBuilder[] levels = new StringBuilder[maxDepth + 1];
+        for (int i = 0; i <= maxDepth; i++) {
+            levels[i] = new StringBuilder();
+        }
+        
+        // 3. Wypełniamy poziomy, przechodząc drzewo In-Order (lewo -> węzeł -> prawo)
+        // Tablica jednoelementowa działa jako referencja do aktualnej pozycji X
+        int[] currentX = {0};
+        fillLevelsInOrder(root, 0, currentX, levels);
+        
+        // 4. Sklejamy wynik od najwyższego poziomu (liści) w dół do korzenia
+        StringBuilder result = new StringBuilder();
+        for (int i = maxDepth; i >= 0; i--) {
+            result.append(levels[i].toString()).append("\n");
+        }
+        
+        return result.toString();
+    }
+
+    private int getMaxDepth(BTNode<K, V> node, int depth) {
+        if (node == null) {
+            return depth - 1;
+        }
+        return Math.max(
+            getMaxDepth(node.left, depth + 1),
+            getMaxDepth(node.right, depth + 1)
+        );
+    }
+
+    private void fillLevelsInOrder(BTNode<K, V> node, int depth, int[] currentX, StringBuilder[] levels) {
+        if (node == null) {
+            return;
+        }
+        
+        // Najpierw schodzimy maksymalnie w lewo (najmniejsze elementy)
+        fillLevelsInOrder(node.left, depth + 1, currentX, levels);
+        
+        // Przetwarzamy aktualny węzeł na jego odpowiedniej głębokości
+        StringBuilder currentLine = levels[depth];
+        
+        // Obliczamy potrzebne spacje. "5" to odstęp między kolumnami – możesz go zmienić na większy/mniejszy
+        int spacing = 5; 
+        int targetPosition = currentX[0] * spacing;
+        
+        // Wypełniamy spacjami, aż linijka osiągnie docelową pozycję dla węzła
+        while (currentLine.length() < targetPosition) {
+            currentLine.append(" ");
+        }
+        
+        // Dopisujemy klucz węzła do odpowiedniej linijki
+        String nodeText = String.valueOf(node.key);
+        currentLine.append(nodeText);
+        
+        // Zwiększamy pozycję X dla następnego węzła w kolejności
+        currentX[0]++;
+        
+        // Na koniec idziemy w prawo (większe elementy)
+        fillLevelsInOrder(node.right, depth + 1, currentX, levels);
     }
 }

@@ -1,3 +1,4 @@
+package JavaCode;
 import java.awt.*;
 import java.io.IOException;
 import javax.swing.*;
@@ -21,14 +22,20 @@ public class ClientGUI {
     private void initializeGUI() {
         frame = new JFrame("Klient Drzewa BT");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500, 400);
+        frame.setSize(500, 450); // Lekko zwiększamy okno
         frame.setLayout(new BorderLayout());
 
-        // Panel wprowadzania danych (Góra)
-        JPanel inputPanel = new JPanel(new GridLayout(2, 2, 5, 5));
+        // Panel wprowadzania danych (Góra) - teraz 3 wiersze
+        JPanel inputPanel = new JPanel(new GridLayout(3, 2, 5, 5));
+        
+        inputPanel.add(new JLabel(" Typ klucza:"));
+        JComboBox<String> typeBox = new JComboBox<>(new String[]{"Integer", "Double", "String"});
+        inputPanel.add(typeBox);
+
         inputPanel.add(new JLabel(" Klucz:"));
         keyField = new JTextField();
         inputPanel.add(keyField);
+        
         inputPanel.add(new JLabel(" Wartość:"));
         valueField = new JTextField();
         inputPanel.add(valueField);
@@ -59,11 +66,11 @@ public class ClientGUI {
         frame.add(topContainer, BorderLayout.NORTH);
         frame.add(scrollPane, BorderLayout.CENTER);
 
-        // Przypisanie akcji do przycisków
-        addButton.addActionListener(e -> execute("ADD " + keyField.getText() + " " + valueField.getText()));
-        getButton.addActionListener(e -> execute("GET " + keyField.getText()));
-        deleteButton.addActionListener(e -> execute("DELETE " + keyField.getText()));
-        showButton.addActionListener(e -> execute("SHOW"));
+        // Przypisanie akcji do przycisków - teraz dołączamy typ wybranej zmiennej!
+        addButton.addActionListener(e -> execute("ADD " + typeBox.getSelectedItem() + " " + keyField.getText() + " " + valueField.getText()));
+        getButton.addActionListener(e -> execute("GET " + typeBox.getSelectedItem() + " " + keyField.getText()));
+        deleteButton.addActionListener(e -> execute("DELETE " + typeBox.getSelectedItem() + " " + keyField.getText()));
+        showButton.addActionListener(e -> execute("SHOW " + typeBox.getSelectedItem()));
 
         // Rozłączenie z serwerem przy zamknięciu okna krzyżykiem
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
