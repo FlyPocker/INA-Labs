@@ -1,4 +1,4 @@
-package JavaCode;
+
 /**
  * Klasa reprezentująca pojedynczy węzeł drzewa BT.
  * @param <K> Typ klucza, który musi implementować interfejs Comparable.

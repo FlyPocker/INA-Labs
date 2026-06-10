@@ -1,4 +1,3 @@
-package JavaCode;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,12 +9,14 @@ public class ClientHandler implements Runnable {
     private final BT<Integer, String> intTree;
     private final BT<Double, String> doubleTree;
     private final BT<String, String> stringTree;
+    private final BT<Point2D, String> pointTree; 
 
-    public ClientHandler(Socket socket, BT<Integer, String> intTree, BT<Double, String> doubleTree, BT<String, String> stringTree) {
+    public ClientHandler(Socket socket, BT<Integer, String> intTree, BT<Double, String> doubleTree, BT<String, String> stringTree, BT<Point2D, String> pointTree) {
         this.socket = socket;
         this.intTree = intTree;
         this.doubleTree = doubleTree;
         this.stringTree = stringTree;
+        this.pointTree = pointTree;
     }
 
     @Override
@@ -45,7 +46,6 @@ public class ClientHandler implements Runnable {
             return "ERROR: Pusta komenda";
         }
 
-        // Krok 1: Odseparowanie samej komendy od reszty parametrów
         String[] initialParts = input.trim().split("\\s+", 2);
         String command = initialParts[0].toUpperCase();
         String rest = initialParts.length > 1 ? initialParts[1] : "";
@@ -53,7 +53,6 @@ public class ClientHandler implements Runnable {
         try {
             switch (command) {
                 case "ADD": {
-                    // Składnia: [TYP] [KLUCZ] [WARTOŚĆ]
                     String[] parts = rest.split("\\s+", 3);
                     if (parts.length < 3) return "ERROR: Składnia: ADD [typ] [klucz] [wartość]";
                     String type = parts[0].toUpperCase();
@@ -64,6 +63,11 @@ public class ClientHandler implements Runnable {
                         intTree.insert(Integer.parseInt(keyStr), value);
                     } else if (type.equals("DOUBLE")) {
                         doubleTree.insert(Double.parseDouble(keyStr), value);
+                    } else if (type.equals("POINT")) {
+                        String[] coords = keyStr.split(",");
+                        if (coords.length != 2) throw new NumberFormatException();
+                        Point2D pt = new Point2D(Integer.parseInt(coords[0]), Integer.parseInt(coords[1]));
+                        pointTree.insert(pt, value);
                     } else {
                         stringTree.insert(keyStr, value);
                     }
@@ -71,7 +75,6 @@ public class ClientHandler implements Runnable {
                 }
 
                 case "GET": {
-                    // Składnia: [TYP] [KLUCZ]
                     String[] parts = rest.split("\\s+", 2);
                     if (parts.length < 2) return "ERROR: Składnia: GET [typ] [klucz]";
                     String type = parts[0].toUpperCase();
@@ -82,6 +85,11 @@ public class ClientHandler implements Runnable {
                         value = intTree.search(Integer.parseInt(keyStr));
                     } else if (type.equals("DOUBLE")) {
                         value = doubleTree.search(Double.parseDouble(keyStr));
+                    } else if (type.equals("POINT")) {
+                        String[] coords = keyStr.split(",");
+                        if (coords.length != 2) throw new NumberFormatException();
+                        Point2D pt = new Point2D(Integer.parseInt(coords[0]), Integer.parseInt(coords[1]));
+                        value = pointTree.search(pt);
                     } else {
                         value = stringTree.search(keyStr);
                     }
@@ -89,7 +97,6 @@ public class ClientHandler implements Runnable {
                 }
 
                 case "DELETE": {
-                    // Składnia: [TYP] [KLUCZ]
                     String[] parts = rest.split("\\s+", 2);
                     if (parts.length < 2) return "ERROR: Składnia: DELETE [typ] [klucz]";
                     String type = parts[0].toUpperCase();
@@ -99,6 +106,11 @@ public class ClientHandler implements Runnable {
                         intTree.delete(Integer.parseInt(keyStr));
                     } else if (type.equals("DOUBLE")) {
                         doubleTree.delete(Double.parseDouble(keyStr));
+                    } else if (type.equals("POINT")) {
+                        String[] coords = keyStr.split(",");
+                        if (coords.length != 2) throw new NumberFormatException();
+                        Point2D pt = new Point2D(Integer.parseInt(coords[0]), Integer.parseInt(coords[1]));
+                        pointTree.delete(pt);
                     } else {
                         stringTree.delete(keyStr);
                     }
@@ -106,17 +118,18 @@ public class ClientHandler implements Runnable {
                 }
 
                 case "SHOW": {
-                    // Składnia: [TYP]
                     String type = rest.trim().toUpperCase();
                     if (type.isEmpty()) return "ERROR: Składnia: SHOW [typ]";
 
                     String structure;
                     if (type.equals("INTEGER")) {
-                        structure = intTree.toBottomUpPyramidString(); 
+                        structure = intTree.toReadableString();
                     } else if (type.equals("DOUBLE")) {
-                        structure = doubleTree.toBottomUpPyramidString();
+                        structure = doubleTree.toReadableString();
+                    } else if (type.equals("POINT")) {
+                        structure = pointTree.toReadableString();
                     } else {
-                        structure = stringTree.toBottomUpPyramidString();
+                        structure = stringTree.toReadableString();
                     }
                     return "TREE: <BR>" + structure.replace("\n", "<BR>");
                 }
@@ -125,7 +138,7 @@ public class ClientHandler implements Runnable {
                     return "ERROR: Nieznana komenda. Dostępne: ADD, GET, DELETE, SHOW";
             }
         } catch (NumberFormatException e) {
-            return "ERROR: Błąd formatu klucza. Upewnij się, że pasuje do wybranego typu danych!";
+            return "ERROR: Błąd formatu klucza! Użyj formatu x,y dla POINT.";
         } catch (Exception e) {
             return "ERROR: Błąd podczas operacji: " + e.getMessage();
         }
