@@ -2,28 +2,32 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
-#include <sys/socket.h>
-#include <unistd.h>
 
-ClientHandler::ClientHandler(int socket, BT<int, std::string>& it, BT<double, std::string>& dt, BT<std::string, std::string>& st)
-    : clientSocket(socket), intTree(it), doubleTree(dt), stringTree(st) {}
+#ifdef _WIN32
+    #include <winsock2.h>
+    #define close_socket closesocket
+#else
+    #include <sys/socket.h>
+    #include <unistd.h>
+    #define close_socket close
+#endif
+
+ClientHandler::ClientHandler(int socket, BT<int, std::string>& it, BT<double, std::string>& dt, BT<std::string, std::string>& st, BT<Point2D, std::string>& pt)
+    : clientSocket(socket), intTree(it), doubleTree(dt), stringTree(st), pointTree(pt) {}
 
 void ClientHandler::run() {
     std::string inputLine;
-    // Czytamy linie od klienta tak długo, jak połączenie jest otwarte
     while (!(inputLine = readLine()).empty()) {
         std::string response = handleCommand(inputLine);
         sendLine(response);
     }
-    // Zamknięcie gniazda po rozłączeniu klienta
-    close(clientSocket);
-    std::cout << "Klient rozłaczony.\n";
+    close_socket(clientSocket);
+    std::cout << "Klient rozlaczony.\n";
 }
 
 std::string ClientHandler::readLine() {
     std::string line = "";
     char ch;
-    // Czytamy po jednym bajcie (znaku), aż trafimy na enter \n
     while (recv(clientSocket, &ch, 1, 0) > 0) {
         if (ch == '\n') break;
         if (ch != '\r') line += ch;
@@ -51,15 +55,13 @@ std::string ClientHandler::handleCommand(const std::string& input) {
     std::string command, type, keyStr, value;
 
     ss >> command;
-    // Zamiana komendy na wielkie litery dla elastyczności
     for (char &c : command) c = toupper(c);
 
     try {
         if (command == "ADD") {
             ss >> type >> keyStr;
-            // Pobieramy resztę strumienia jako wartość (może zawierać spacje)
             std::getline(ss >> std::ws, value); 
-            if (type.empty() || keyStr.empty() || value.empty()) return "ERROR: Składnia: ADD [typ] [klucz] [wartosc]";
+            if (type.empty() || keyStr.empty() || value.empty()) return "ERROR: Skladnia: ADD [typ] [klucz] [wartosc]";
             
             for (char &char_type : type) char_type = toupper(char_type);
 
@@ -67,6 +69,12 @@ std::string ClientHandler::handleCommand(const std::string& input) {
                 intTree.insert(std::stoi(keyStr), value);
             } else if (type == "DOUBLE") {
                 doubleTree.insert(std::stod(keyStr), value);
+            } else if (type == "POINT") {
+                size_t comma = keyStr.find(',');
+                if (comma == std::string::npos) throw std::invalid_argument("Format to x,y");
+                int px = std::stoi(keyStr.substr(0, comma));
+                int py = std::stoi(keyStr.substr(comma + 1));
+                pointTree.insert(Point2D(px, py), value);
             } else {
                 stringTree.insert(keyStr, value);
             }
@@ -74,7 +82,7 @@ std::string ClientHandler::handleCommand(const std::string& input) {
         } 
         else if (command == "GET") {
             ss >> type >> keyStr;
-            if (type.empty() || keyStr.empty()) return "ERROR: Składnia: GET [typ] [klucz]";
+            if (type.empty() || keyStr.empty()) return "ERROR: Skladnia: GET [typ] [klucz]";
             
             for (char &char_type : type) char_type = toupper(char_type);
             std::string resVal;
@@ -84,6 +92,12 @@ std::string ClientHandler::handleCommand(const std::string& input) {
                 found = intTree.search(std::stoi(keyStr), resVal);
             } else if (type == "DOUBLE") {
                 found = doubleTree.search(std::stod(keyStr), resVal);
+            } else if (type == "POINT") {
+                size_t comma = keyStr.find(',');
+                if (comma == std::string::npos) throw std::invalid_argument("Format to x,y");
+                int px = std::stoi(keyStr.substr(0, comma));
+                int py = std::stoi(keyStr.substr(comma + 1));
+                found = pointTree.search(Point2D(px, py), resVal);
             } else {
                 found = stringTree.search(keyStr, resVal);
             }
@@ -91,7 +105,7 @@ std::string ClientHandler::handleCommand(const std::string& input) {
         } 
         else if (command == "DELETE") {
             ss >> type >> keyStr;
-            if (type.empty() || keyStr.empty()) return "ERROR: Składnia: DELETE [typ] [klucz]";
+            if (type.empty() || keyStr.empty()) return "ERROR: Skladnia: DELETE [typ] [klucz]";
             
             for (char &char_type : type) char_type = toupper(char_type);
 
@@ -99,6 +113,12 @@ std::string ClientHandler::handleCommand(const std::string& input) {
                 intTree.remove(std::stoi(keyStr));
             } else if (type == "DOUBLE") {
                 doubleTree.remove(std::stod(keyStr));
+            } else if (type == "POINT") {
+                size_t comma = keyStr.find(',');
+                if (comma == std::string::npos) throw std::invalid_argument("Format to x,y");
+                int px = std::stoi(keyStr.substr(0, comma));
+                int py = std::stoi(keyStr.substr(comma + 1));
+                pointTree.remove(Point2D(px, py));
             } else {
                 stringTree.remove(keyStr);
             }
@@ -106,30 +126,31 @@ std::string ClientHandler::handleCommand(const std::string& input) {
         } 
         else if (command == "SHOW") {
             ss >> type;
-            if (type.empty()) return "ERROR: Składnia: SHOW [typ]";
+            if (type.empty()) return "ERROR: Skladnia: SHOW [typ]";
             
             for (char &char_type : type) char_type = toupper(char_type);
             std::string structure;
 
             if (type == "INTEGER") {
-                structure = intTree.toBottomUpPyramidString();
+                structure = intTree.toReadableString();
             } else if (type == "DOUBLE") {
-                structure = doubleTree.toBottomUpPyramidString();
+                structure = doubleTree.toReadableString();
+            } else if (type == "POINT") {
+                structure = pointTree.toReadableString();
             } else {
-                structure = stringTree.toBottomUpPyramidString();
+                structure = stringTree.toReadableString();
             }
 
-            // Podmieniamy entery na znacznik internetowy <BR> przed wysłaniem
             replaceAll(structure, "\n", "<BR>");
             return "TREE: <BR>" + structure;
         }
 
         return "ERROR: Nieznana komenda. Dostepne: ADD, GET, DELETE, SHOW";
     } 
-    // Przechwytywanie wyjątków konwersji typów (np. tekst zamiast liczby)
-     catch (const std::invalid_argument& e) {
-        return "ERROR: Blad formatu klucza! Upewnij sie, ze pasuje do wybranego typu.";
-    } catch (const std::exception& e) {
+    catch (const std::invalid_argument& e) {
+        return "ERROR: Blad formatu klucza! Upewnij sie, ze pasuje do wybranego typu (np. x,y dla POINT).";
+    } 
+    catch (const std::exception& e) {
         return "ERROR: Blad operacji: " + std::string(e.what());
     }
 }

@@ -1,5 +1,6 @@
 #include "BT.hpp"
 #include "ClientHandler.hpp"
+#include "Point2D.hpp"
 #include <iostream>
 #include <thread>
 #include <sys/socket.h>
@@ -13,6 +14,7 @@ int main() {
     BT<int, std::string> intTree;
     BT<double, std::string> doubleTree;
     BT<std::string, std::string> stringTree;
+    
 
     // 2. Tworzenie gniazda serwera (IPv4, TCP)
     int serverSocket = socket(AF_INET, SOCK_STREAM, 0);

@@ -2,6 +2,7 @@
 #define CLIENT_HANDLER_HPP
 
 #include "BT.hpp"
+#include "Point2D.hpp"
 #include <string>
 
 class ClientHandler {
@@ -10,8 +11,8 @@ private:
     BT<int, std::string>& intTree;
     BT<double, std::string>& doubleTree;
     BT<std::string, std::string>& stringTree;
+    BT<Point2D, std::string>& pointTree;
 
-    // Metody pomocnicze do obsługi sieci i parsowania
     std::string readLine();
     void sendLine(const std::string& line);
     std::string handleCommand(const std::string& input);
@@ -21,9 +22,9 @@ public:
     ClientHandler(int socket, 
                   BT<int, std::string>& it, 
                   BT<double, std::string>& dt, 
-                  BT<std::string, std::string>& st);
+                  BT<std::string, std::string>& st,
+                  BT<Point2D, std::string>& pt);
                   
-    // Metoda uruchamiająca pętlę wątku
     void run();
 };
 
