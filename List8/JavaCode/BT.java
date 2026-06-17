@@ -66,15 +66,15 @@ public class BT<K extends Comparable<K>> {
     }
 
     /**
-     * Serializuje drzewo do formatu (Klucz(Lewy)(Prawy)), np: (5(3()())(8()()))
+     * Serializuje drzewo do formatu [Klucz[Lewy][Prawy]], np: [5[3[][]][8[][]]]
      */
     public synchronized String serialize() {
-        if (root == null) return "()";
+        if (root == null) return "[]";
         return serializeNode(root);
     }
 
     private String serializeNode(BTNode<K> node) {
-        if (node == null) return "()";
-        return "(" + node.key.toString() + serializeNode(node.left) + serializeNode(node.right) + ")";
+        if (node == null) return "[]";
+        return "[" + node.key.toString() + serializeNode(node.left) + serializeNode(node.right) + "]";
     }
 }

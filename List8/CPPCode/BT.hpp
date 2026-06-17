@@ -64,10 +64,11 @@ private:
         return current;
     }
 
+    // Zmiana na kwadratowe nawiasy
     std::string serializeNode(BTNode<K>* node) const {
-        if (node == nullptr) return "()";
+        if (node == nullptr) return "[]";
         std::stringstream ss;
-        ss << "(" << node->key << serializeNode(node->left) << serializeNode(node->right) << ")";
+        ss << "[" << node->key << serializeNode(node->left) << serializeNode(node->right) << "]";
         return ss.str();
     }
 
@@ -88,7 +89,7 @@ public:
     }
 
     std::string serialize() const {
-        if (root == nullptr) return "()";
+        if (root == nullptr) return "[]";
         return serializeNode(root);
     }
 };

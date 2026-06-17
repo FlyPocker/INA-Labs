@@ -149,24 +149,27 @@ public class ClientGUI {
         }
     }
 
-    // Nowy, szybki i poprawny system parsowania z formatu np: (5(3()())(8()()))
+    // Zaktualizowany system parsowania oparty na nawiasach kwadratowych
     private GNode parseSerializedTree(String text) {
-        if (text == null || text.equals("()") || text.isEmpty()) return null;
+        if (text == null || text.equals("[]") || text.isEmpty()) return null;
         return parseNode(new StringBuilder(text));
     }
 
     private GNode parseNode(StringBuilder sb) {
-        if (sb.length() == 0 || sb.charAt(0) != '(') return null;
-        sb.deleteCharAt(0); // usuń '('
+        if (sb.length() == 0 || sb.charAt(0) != '[') return null;
+        sb.deleteCharAt(0); // usuń '['
         
-        if (sb.charAt(0) == ')') {
-            sb.deleteCharAt(0); // usuń ')' (pusty węzeł)
+        if (sb.charAt(0) == ']') {
+            sb.deleteCharAt(0); // usuń ']' (pusty węzeł)
             return null;
         }
         
-        // wyciągamy klucz do następnego nawiasu
+        // Wyciągamy klucz aż do napotkania nawiasu KWADRATOWEGO. 
+        // Okrągłe nawiasy od punktów np. (1,2) zostaną zignorowane jako część klucza.
         int i = 0;
-        while (i < sb.length() && sb.charAt(i) != '(' && sb.charAt(i) != ')') i++;
+        while (i < sb.length() && sb.charAt(i) != '[' && sb.charAt(i) != ']') {
+            i++;
+        }
         String key = sb.substring(0, i);
         sb.delete(0, i);
         
@@ -174,8 +177,8 @@ public class ClientGUI {
         node.left = parseNode(sb);
         node.right = parseNode(sb);
         
-        if (sb.length() > 0 && sb.charAt(0) == ')') {
-            sb.deleteCharAt(0); // usuń kończący ')' dla tego węzła
+        if (sb.length() > 0 && sb.charAt(0) == ']') {
+            sb.deleteCharAt(0); // usuń kończący ']' dla tego węzła
         }
         
         return node;
