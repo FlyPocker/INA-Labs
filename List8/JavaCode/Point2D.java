@@ -15,6 +15,7 @@ public class Point2D implements Comparable<Point2D> {
     public int compareTo(Point2D other) {
         int distCmp = Double.compare(this.getDistance(), other.getDistance());
         if (distCmp != 0) return distCmp;
+        
         if (this.x != other.x) return Integer.compare(this.x, other.x);
         return Integer.compare(this.y, other.y);
     }

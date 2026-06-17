@@ -6,12 +6,12 @@ public class Server {
     private static final int PORT = 1234;
 
     public static void main(String[] args) {
-        BT<Integer, String> intTree = new BT<>();
-        BT<Double, String> doubleTree = new BT<>();
-        BT<String, String> stringTree = new BT<>();
-        BT<Point2D, String> pointTree = new BT<>();
+        BT<Integer> intTree = new BT<>();
+        BT<Double> doubleTree = new BT<>();
+        BT<String> stringTree = new BT<>();
+        BT<Point2D> pointTree = new BT<>();
 
-        System.out.println("Serwer uruchomiony. Oczekiwanie na połączenia na porcie " + PORT + "...");
+        System.out.println("Serwer uruchomiony. Nasluchiwanie na porcie " + PORT + "...");
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             while (true) {

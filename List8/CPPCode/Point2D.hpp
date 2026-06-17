@@ -13,7 +13,6 @@ struct Point2D {
         return std::sqrt(x * x + y * y);
     }
 
-    // Przeciążenie operatora mniejszości dla drzewa BST
     bool operator<(const Point2D& other) const {
         double d1 = getDistance();
         double d2 = other.getDistance();
@@ -22,7 +21,6 @@ struct Point2D {
         return y < other.y;
     }
 
-    // Przeciążenie operatora większości
     bool operator>(const Point2D& other) const {
         double d1 = getDistance();
         double d2 = other.getDistance();
@@ -31,12 +29,10 @@ struct Point2D {
         return y > other.y;
     }
 
-    // Przeciążenie operatora równości
     bool operator==(const Point2D& other) const {
         return x == other.x && y == other.y;
     }
 
-    // Wypisywanie do strumienia tekstowego
     friend std::ostream& operator<<(std::ostream& os, const Point2D& p) {
         os << "(" << p.x << "," << p.y << ")";
         return os;
