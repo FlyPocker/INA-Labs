@@ -115,155 +115,186 @@ flowchart LR
 
 **Aktor:** czytelnik lub pracownik biblioteki.
 
-**Warunki początkowe:** system działa i wyświetla menu.
+**Warunki początkowe:**
+- system jest uruchomiony i wyświetla menu główne;
+- użytkownik wybiera opcję `1`.
 
 **Scenariusz główny:**
 
-1. Aktor wybiera opcję `1`.
-2. System prosi o nazwę czytelnika.
-3. Aktor podaje nazwę.
-4. `LibraryService` sprawdza, czy taka nazwa nie istnieje w repozytorium.
-5. System tworzy obiekt `User`, zapisuje go i wyświetla potwierdzenie.
+1. Aktor podaje nazwę czytelnika.
+2. System wywołuje metodę `addUser(name)` z klasy `LibraryService`.
+3. `LibraryService` sprawdza, czy czytelnik o tej nazwie już istnieje.
+4. Jeśli nie istnieje, system zapisuje nowego użytkownika i wyświetla komunikat o pomyślnym dodaniu.
 
-**Scenariusz alternatywny:** jeżeli nazwa już istnieje, system nie tworzy
-drugiego obiektu i wyświetla komunikat o istniejącym czytelniku.
+**Warunki końcowe:**
+- w repozytorium pojawia się nowy użytkownik;
+- jeśli użytkownik o takiej nazwie już istnieje, operacja nie tworzy duplikatu.
 
-**Warunek końcowy:** nowy czytelnik znajduje się w repozytorium albo dane
-pozostają bez zmian.
+**Wyjątki:**
+- jeżeli nazwa już występuje w systemie, metoda `addUser` zwraca `false`, a aplikacja wyświetla komunikat: „Czytelnik o takiej nazwie już istnieje.”
 
 ### UC2 — Dodaj książkę
 
 **Aktor:** pracownik biblioteki.
 
-**Warunki początkowe:** system działa i wyświetla menu.
+**Warunki początkowe:**
+- system jest uruchomiony;
+- użytkownik wybiera opcję `2`.
 
 **Scenariusz główny:**
 
-1. Aktor wybiera opcję `2`.
-2. System prosi o tytuł książki.
-3. Aktor podaje tytuł i autora.
-4. `LibraryService` sprawdza, czy tytuł nie jest już zapisany.
-5. System tworzy obiekt `Book`, zapisuje go i wyświetla potwierdzenie.
+1. Aktor podaje tytuł i autora książki.
+2. System wywołuje metodę `addBook(title, author)`.
+3. `LibraryService` sprawdza, czy książka o takim tytuł już istnieje.
+4. Jeśli nie istnieje, zapisuje nową książkę i wyświetla komunikat o dodaniu.
 
-**Scenariusz alternatywny:** jeżeli tytuł już istnieje, system odrzuca
-operację, niezależnie od podanego autora.
+**Warunki końcowe:**
+- w repozytorium pojawia się nowa książka;
+- tytuł książki jest unikalny w systemie.
 
-**Warunek końcowy:** w systemie istnieje najwyżej jedna książka o danym
-tytule.
+**Wyjątki:**
+- jeżeli książka o tym tytule już istnieje, metoda `addBook` zwraca `false`, a aplikacja wyświetla komunikat: „Książka o tym tytule już jest w systemie.”
 
 ### UC3 — Dodaj egzemplarz książki
 
 **Aktor:** pracownik biblioteki.
 
-**Warunki początkowe:** książka może, ale nie musi, istnieć.
+**Warunki początkowe:**
+- system jest uruchomiony;
+- użytkownik wybiera opcję `3`;
+- książka, do której ma zostać dodany egzemplarz, musi już istnieć w systemie.
 
 **Scenariusz główny:**
 
-1. Aktor wybiera opcję `3`.
-2. Podaje tytuł książki.
-3. `LibraryService` wyszukuje książkę.
-4. System tworzy `Copy` z kolejnym numerem inwentarzowym, na przykład `C001`.
-5. Egzemplarz zostaje dodany do listy kopii książki.
-6. System wyświetla numer inwentarzowy.
+1. Aktor podaje tytuł książki.
+2. System wywołuje metodę `addCopy(bookTitle)`.
+3. `LibraryService` wyszukuje książkę po tytule.
+4. Jeżeli książka istnieje, system tworzy nowy obiekt `Copy` i dodaje go do książki.
+5. Program wyświetla numer inwentarzowy nowego egzemplarza.
 
-**Scenariusz alternatywny:** jeżeli książka nie istnieje, system nie tworzy
-egzemplarza i informuje, że najpierw trzeba dodać książkę.
+**Warunki końcowe:**
+- do książki zostaje dodany nowy egzemplarz;
+- nowy egzemplarz ma unikalny numer inwentarzowy.
 
-**Warunek końcowy:** istniejąca książka ma jeden dodatkowy, dostępny
-egzemplarz albo dane pozostają bez zmian.
+**Wyjątki:**
+- jeżeli książka nie istnieje, metoda `addCopy` zwraca `null`, a aplikacja wyświetla komunikat: „Nie znaleziono takiej książki. Najpierw ją dodaj (Opcja 2).”
 
 ### UC4 — Wypożycz książkę
 
 **Aktor:** czytelnik.
 
-**Warunki początkowe:** czytelnik, książka i co najmniej jeden egzemplarz
-mogący zostać wypożyczonym istnieją w systemie.
+**Warunki początkowe:**
+- system jest uruchomiony;
+- użytkownik wybiera opcję `4`;
+- użytkownik i książka są podawane ręcznie przez użytkownika.
 
 **Scenariusz główny:**
 
-1. Aktor wybiera opcję `4`.
-2. Podaje nazwę czytelnika i tytuł książki.
-3. System wyszukuje użytkownika i książkę.
-4. `LibraryService` przechodzi po egzemplarzach książki.
-5. Pierwszy dostępny egzemplarz zostaje dodany do wypożyczeń użytkownika.
-6. Egzemplarz otrzymuje status „wypożyczony”.
-7. System wyświetla potwierdzenie.
+1. Aktor podaje nazwę czytelnika i tytuł książki.
+2. System wywołuje metodę `borrowBook(userName, bookTitle)`.
+3. `LibraryService` szuka czytelnika i książkę w repozytorium.
+4. Jeśli oba obiekty istnieją, system przegląda egzemplarze książki i wybiera pierwszy dostępny.
+5. Egzemplarz zostaje dodany do listy wypożyczonych przez czytelnika i oznaczony jako „wypożyczony”.
+6. Metoda zwraca `true`, a aplikacja wyświetla komunikat o pomyślnym wypożyczeniu.
 
-**Scenariusze alternatywne:**
+**Warunki końcowe:**
+- czytelnik ma wypożyczony egzemplarz;
+- egzemplarz ma status `isBorrowed == true`.
 
-- jeżeli użytkownik lub książka nie istnieją, system odrzuca operację;
-- jeżeli wszystkie egzemplarze są wypożyczone, system odrzuca operację;
-- w obu przypadkach system wyświetla komunikat o błędzie.
-
-**Warunek końcowy:** przy sukcesie użytkownik posiada egzemplarz na liście
-wypożyczeń, a egzemplarz ma status „wypożyczony”.
+**Wyjątki:**
+- jeżeli czytelnik lub książka nie istnieją, metoda `borrowBook` zwraca `false`, a aplikacja wyświetla komunikat: „Błąd: Nie znaleziono czytelnika lub książki w systemie.”
+- jeśli książka nie ma dostępnych egzemplarzy, metoda również zwraca `false` i kończy operację.
 
 ### UC5 — Zwróć książkę
 
 **Aktor:** czytelnik.
 
-**Warunki początkowe:** użytkownik istnieje i posiada wypożyczony egzemplarz.
+**Warunki początkowe:**
+- system jest uruchomiony;
+- użytkownik wybiera opcję `5`;
+- użytkownik musi istnieć w systemie.
 
 **Scenariusz główny:**
 
-1. Aktor wybiera opcję `5`.
-2. Podaje nazwę użytkownika.
-3. System sprawdza, czy użytkownik istnieje.
-4. Aktor podaje numer inwentarzowy egzemplarza.
-5. `LibraryService` szuka egzemplarza w wypożyczeniach użytkownika.
-6. System usuwa egzemplarz z wypożyczeń i oznacza go jako dostępny.
-7. System wyświetla potwierdzenie.
+1. Aktor podaje nazwę czytelnika.
+2. System sprawdza, czy użytkownik istnieje.
+3. Jeżeli użytkownik istnieje, aktor podaje numer inwentarzowy zwracanego egzemplarza.
+4. System wywołuje metodę `returnBook(userName, inventoryNumber)`.
+5. `LibraryService` szuka egzemplarza na liście wypożyczonych przez użytkownika.
+6. Jeśli egzemplarz zostanie znaleziony, zostaje usunięty z listy wypożyczonych i oznaczony jako dostępny.
+7. Aplikacja wyświetla komunikat o zwrocie.
 
-**Scenariusze alternatywne:**
+**Warunki końcowe:**
+- egzemplarz przestaje być przypisany do użytkownika;
+- egzemplarz ma status dostępny do kolejnego wypożyczenia.
 
-- jeżeli użytkownik nie istnieje, system wyświetla komunikat o braku
-  czytelnika;
-- jeżeli użytkownik nie posiada podanego egzemplarza, system odrzuca
-  zwrot.
-
-**Warunek końcowy:** przy sukcesie egzemplarz nie należy już do wypożyczeń
-użytkownika i jest dostępny dla kolejnego wypożyczenia.
+**Wyjątki:**
+- jeżeli użytkownik nie istnieje, aplikacja wyświetla komunikat: „Nie znaleziono czytelnika.”
+- jeżeli użytkownik nie ma egzemplarza z podanym numerem inwentarzowym, aplikacja wyświetla komunikat: „Czytelnik nie posiada egzemplarza o takim numerze.”
 
 ### UC6 — Wyświetl listę czytelników
 
 **Aktor:** czytelnik lub pracownik biblioteki.
 
+**Warunki początkowe:**
+- system jest uruchomiony;
+- użytkownik wybiera opcję `6`.
+
 **Scenariusz główny:**
 
-1. Aktor wybiera opcję `6`.
-2. System pobiera wszystkich użytkowników z repozytorium.
-3. System wyświetla imiona oraz liczbę wypożyczonych egzemplarzy.
+1. System wywołuje `findAllUsers()`.
+2. Jeśli lista użytkowników jest pusta, wyświetla komunikat o braku użytkowników.
+3. W przeciwnym razie wyświetla imiona czytelników oraz liczbę wypożyczonych egzemplarzy.
 
-**Scenariusz alternatywny:** jeżeli lista jest pusta, system wyświetla
-komunikat „Brak użytkowników w systemie”.
+**Warunki końcowe:**
+- użytkownik widzi aktualną listę wszystkich czytelników w systemie;
+- dla każdego czytelnika wyświetlana jest liczba jego wypożyczonych książek.
+
+**Wyjątki:**
+- jeżeli nie ma żadnych użytkowników, aplikacja wyświetla komunikat: „Brak użytkowników w systemie.”
 
 ### UC7 — Wyświetl listę książek
 
 **Aktor:** czytelnik lub pracownik biblioteki.
 
+**Warunki początkowe:**
+- system jest uruchomiony;
+- użytkownik wybiera opcję `7`.
+
 **Scenariusz główny:**
 
-1. Aktor wybiera opcję `7`.
-2. System pobiera wszystkie książki z repozytorium.
-3. System wyświetla tytuł, autora oraz każdy egzemplarz.
-4. Dla każdego egzemplarza system wyświetla status „dostępny” albo
-   „wypożyczony”.
+1. System wywołuje `findAllBooks()`.
+2. Jeśli lista książek jest pusta, wyświetla komunikat o braku książek.
+3. W przeciwnym razie wyświetla listę książek wraz z autorami oraz stanem każdego egzemplarza.
 
-**Scenariusze alternatywne:**
+**Warunki końcowe:**
+- użytkownik widzi wszystkie książki w systemie oraz status każdego egzemplarza;
+- stan każdej kopii jest odczytywany bezpośrednio z obiektu `Copy`.
 
-- jeżeli nie ma książek, system wyświetla komunikat o braku książek;
-- jeżeli książka nie ma egzemplarzy, system wyświetla komunikat „Brak
-  egzemplarzy”.
+**Wyjątki:**
+- jeżeli nie ma książek, aplikacja wyświetla komunikat: „Brak książek w systemie.”
+- jeżeli książka nie ma żadnych egzemplarzy, wyświetla komunikat: „Brak egzemplarzy.”
 
 ### UC8 — Zakończ pracę systemu
 
 **Aktor:** czytelnik lub pracownik biblioteki.
 
+**Warunki początkowe:**
+- system jest uruchomiony;
+- użytkownik wybiera opcję `0`.
+
 **Scenariusz główny:**
 
-1. Aktor wybiera opcję `0`.
-2. System ustawia stan aplikacji jako nieaktywny.
-3. System wyświetla komunikat o zamykaniu.
-4. Pętla menu kończy działanie, a `Scanner` zostaje zamknięty.
+1. Aktor wybiera `0` z menu.
+2. System ustawia zmienną `running` na `false`.
+3. Aplikacja wyświetla komunikat „Zamykanie systemu...” i kończy działanie.
+4. `Scanner` zostaje zamknięty.
 
-**Warunek końcowy:** aplikacja kończy działanie.
+**Warunki końcowe:**
+- aplikacja kończy działanie;
+- program nie wykonuje żadnych dalszych instrukcji.
+
+**Wyjątki:**
+- w typowym przebiegu działania aplikacji brak wyjątków; zamknięcie następuje poprawnie po wybraniu opcji `0`.
+
+

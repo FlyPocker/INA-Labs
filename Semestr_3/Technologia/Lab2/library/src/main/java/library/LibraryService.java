@@ -10,7 +10,7 @@ public class LibraryService {
         repository = libraryRepository;
     }
 
-    // GRASP Controller coordinates use cases; domain objects keep their own state.
+    // GRASP Controller koordynuje logiką aplikacji, deleguje zmiany danych odpowiednim klasom
     public boolean addUser(String name) {
         if (repository.findUser(name) != null) {
             return false;

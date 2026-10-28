@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// GRASP Pure Fabrication: storage is separated from domain classes.
-// Dependency Inversion allows another repository implementation later.
+// GRASP Pure Fabrication: Dane są przechowywanie w pamięci, ale odzielone są od logiki kodu przez interfejs LibraryRepository.
+// Dependency Inversion: Pozwala to na łatwą zmianę na inna implementację bazy danych
 public class InMemoryLibraryRepository implements LibraryRepository {
     private final Map<String, User> users = new HashMap<>();
 

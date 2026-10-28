@@ -29,7 +29,7 @@ public class Book {
     }
 
     public void addCopy(Copy copy) {
-        // GRASP Information Expert: a book owns and manages its copies.
+        // GRASP Information Expert: Book kontroluje stan swoich kopii bo jest ich właścicielem
         copies.add(copy);
     }
 }

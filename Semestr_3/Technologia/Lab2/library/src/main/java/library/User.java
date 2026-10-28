@@ -22,7 +22,7 @@ public class User {
     }
 
     public void borrowCopy(Copy copy) {
-        // GRASP Information Expert: a user manages their borrowed copies.
+        // GRASP Information Expert: User kontroluje stan wypożyczonych kopii, ponieważ jest to jego własna zmienna
         borrowedCopies.add(copy);
     }
 }

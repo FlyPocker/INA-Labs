@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) {
-        // GRASP Controller: App handles console input and delegates library operations.
+        // GRASP Controller: App obsluguje interakcję z użytkownikiem, deleguje logike do LibraryService
         Scanner scanner = new Scanner(System.in);
         LibraryService libraryService = new LibraryService(new InMemoryLibraryRepository());
 

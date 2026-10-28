@@ -23,7 +23,7 @@ public class Copy {
     }
 
     public void setBorrowed(boolean borrowed) {
-        // GRASP Information Expert: a copy owns its availability state.
+        // GRASP Information Expert: kopia kontroluje stan wypożyczenia wlasnej zmeinnej
         isBorrowed = borrowed;
     }
 }
