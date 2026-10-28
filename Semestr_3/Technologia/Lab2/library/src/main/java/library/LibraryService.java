@@ -4,31 +4,34 @@ import java.util.List;
 
 public class LibraryService {
 
-    private final LibraryRepository repository;
+    private final UserRepository userRepository;
 
-    public LibraryService(LibraryRepository libraryRepository) {
-        repository = libraryRepository;
+    private final BookRepository bookRepository;
+
+    public LibraryService(UserRepository users, BookRepository books) {
+        userRepository = users;
+        bookRepository = books;
     }
 
     // GRASP Controller koordynuje logiką aplikacji, deleguje zmiany danych odpowiednim klasom
     public boolean addUser(String name) {
-        if (repository.findUser(name) != null) {
+        if (userRepository.findUser(name) != null) {
             return false;
         }
-        repository.saveUser(new User(name));
+        userRepository.saveUser(new User(name));
         return true;
     }
 
     public boolean addBook(String title, String author) {
-        if (repository.findBook(title) != null) {
+        if (bookRepository.findBook(title) != null) {
             return false;
         }
-        repository.saveBook(new Book(title, author));
+        bookRepository.saveBook(new Book(title, author));
         return true;
     }
 
     public Copy addCopy(String bookTitle) {
-        Book book = repository.findBook(bookTitle);
+        Book book = bookRepository.findBook(bookTitle);
         if (book == null) {
             return null;
         }
@@ -38,8 +41,8 @@ public class LibraryService {
     }
 
     public boolean borrowBook(String userName, String bookTitle) {
-        User user = repository.findUser(userName);
-        Book book = repository.findBook(bookTitle);
+        User user = userRepository.findUser(userName);
+        Book book = bookRepository.findBook(bookTitle);
         if (user == null || book == null) {
             return false;
         }
@@ -54,7 +57,7 @@ public class LibraryService {
     }
 
     public boolean returnBook(String userName, String inventoryNumber) {
-        User user = repository.findUser(userName);
+        User user = userRepository.findUser(userName);
         if (user == null) {
             return false;
         }
@@ -69,19 +72,19 @@ public class LibraryService {
     }
 
     public User findUser(String name) {
-        return repository.findUser(name);
+        return userRepository.findUser(name);
     }
 
     public Book findBook(String title) {
-        return repository.findBook(title);
+        return bookRepository.findBook(title);
     }
 
     public List<User> findAllUsers() {
-        return repository.findAllUsers();
+        return userRepository.findAllUsers();
     }
 
     public List<Book> findAllBooks() {
-        return repository.findAllBooks();
+        return bookRepository.findAllBooks();
     }
 
 }

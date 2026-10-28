@@ -13,7 +13,8 @@ class LibraryServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new LibraryService(new InMemoryLibraryRepository());
+        service = new LibraryService(
+                new InMemoryUserRepository(), new InMemoryBookRepository());
     }
 
     @Test

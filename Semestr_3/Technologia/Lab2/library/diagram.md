@@ -9,8 +9,9 @@ classDiagram
     }
 
     class LibraryService {
-        -LibraryRepository repository
-        +LibraryService(LibraryRepository repository)
+        -UserRepository userRepository
+        -BookRepository bookRepository
+        +LibraryService(UserRepository userRepository, BookRepository bookRepository)
         +addUser(String name) boolean
         +addBook(String title, String author) boolean
         +addCopy(String bookTitle) Copy
@@ -22,24 +23,31 @@ classDiagram
         +findAllBooks() List~Book~
     }
 
-    class LibraryRepository {
+    class UserRepository {
         <<interface>>
         +findUser(String name) User
-        +findBook(String title) Book
         +findAllUsers() List~User~
-        +findAllBooks() List~Book~
         +saveUser(User user) void
+    }
+
+    class BookRepository {
+        <<interface>>
+        +findBook(String title) Book
+        +findAllBooks() List~Book~
         +saveBook(Book book) void
     }
 
-    class InMemoryLibraryRepository {
+    class InMemoryUserRepository {
         -Map~String, User~ users
-        -Map~String, Book~ books
         +findUser(String name) User
-        +findBook(String title) Book
         +findAllUsers() List~User~
-        +findAllBooks() List~Book~
         +saveUser(User user) void
+    }
+
+    class InMemoryBookRepository {
+        -Map~String, Book~ books
+        +findBook(String title) Book
+        +findAllBooks() List~Book~
         +saveBook(Book book) void
     }
 
@@ -74,10 +82,12 @@ classDiagram
     }
 
     App --> LibraryService : korzysta
-    LibraryService --> LibraryRepository : zależy od abstrakcji
-    InMemoryLibraryRepository ..|> LibraryRepository : implementuje
-    InMemoryLibraryRepository o-- User : przechowuje
-    InMemoryLibraryRepository o-- Book : przechowuje
+    LibraryService --> UserRepository : zależy od abstrakcji
+    LibraryService --> BookRepository : zależy od abstrakcji
+    InMemoryUserRepository ..|> UserRepository : implementuje
+    InMemoryBookRepository ..|> BookRepository : implementuje
+    InMemoryUserRepository o-- User : przechowuje
+    InMemoryBookRepository o-- Book : przechowuje
     Book *-- Copy : posiada egzemplarze
     User o-- Copy : wypożycza
 ```
@@ -296,5 +306,4 @@ flowchart LR
 
 **Wyjątki:**
 - w typowym przebiegu działania aplikacji brak wyjątków; zamknięcie następuje poprawnie po wybraniu opcji `0`.
-
 

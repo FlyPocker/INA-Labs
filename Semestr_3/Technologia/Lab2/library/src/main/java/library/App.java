@@ -6,7 +6,8 @@ public class App {
     public static void main(String[] args) {
         // GRASP Controller: App obsluguje interakcję z użytkownikiem, deleguje logike do LibraryService
         Scanner scanner = new Scanner(System.in);
-        LibraryService libraryService = new LibraryService(new InMemoryLibraryRepository());
+        LibraryService libraryService = new LibraryService(
+                new InMemoryUserRepository(), new InMemoryBookRepository());
 
         System.out.println("Witaj w systemie zarządzania biblioteką!");
 
