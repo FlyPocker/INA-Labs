@@ -53,7 +53,7 @@ public class ClientGUI {
 
         outputArea = new JTextArea();
         outputArea.setEditable(false);
-        outputArea.setFont(new Font("Consolas", Font.PLAIN, 14));
+        outputArea.setFont(new Font("Consolas", Font.PLAIN, 25));
         outputArea.setBackground(new Color(245, 245, 245));
         JScrollPane logScrollPane = new JScrollPane(outputArea);
         logScrollPane.setBorder(BorderFactory.createTitledBorder("Logi serwera"));
@@ -75,7 +75,7 @@ public class ClientGUI {
             private void drawTree(Graphics2D g, GNode node, int x, int y, int xOffset) {
                 if (node == null) return;
                 
-                int radius = 20; 
+                int radius = 40; 
                 int levelHeight = 60; 
 
                 g.setColor(new Color(150, 150, 150));
@@ -96,7 +96,7 @@ public class ClientGUI {
                 g.drawOval(x - radius, y - radius, radius * 2, radius * 2);
 
                 g.setColor(Color.BLACK);
-                g.setFont(new Font("Arial", Font.BOLD, 13));
+                g.setFont(new Font("Arial", Font.BOLD, 25));
                 FontMetrics fm = g.getFontMetrics();
                 g.drawString(node.key, x - fm.stringWidth(node.key) / 2, y + fm.getAscent() / 2 - 2);
             }
@@ -164,7 +164,7 @@ public class ClientGUI {
             return null;
         }
         
-        // Wyciągamy klucz aż do napotkania nawiasu KWADRATOWEGO. 
+        // Wyciągamy klucz aż do napotkania nawiasu kwadratowego. 
         // Okrągłe nawiasy od punktów np. (1,2) zostaną zignorowane jako część klucza.
         int i = 0;
         while (i < sb.length() && sb.charAt(i) != '[' && sb.charAt(i) != ']') {

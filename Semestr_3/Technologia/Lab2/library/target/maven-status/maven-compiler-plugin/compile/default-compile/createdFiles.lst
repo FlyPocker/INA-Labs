@@ -1,0 +1,7 @@
+library/Book.class
+library/App.class
+library/User.class
+library/LibraryRepository.class
+library/Copy.class
+library/InMemoryLibraryRepository.class
+library/LibraryService.class

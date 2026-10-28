@@ -1,0 +1,142 @@
+#Zadanie 1.1
+#Baze danych odpalam w kontenerze przy pomocy docker-compose.yml, na podstawie obrazu mysql, i zapisuje baze do volumes, aby przywrocic orginalny stan
+#wystarczy wywolac komende docker-compose down -v, gdzie flaga -v usuwa wszystkie volumes podłączone do kontenera, przez co zapominamy tez zmian w bazie
+#i wtedy przy nastepnym wywolaniu docker-compose up, baza na nowo sie zgra w orginalnym stanie
+
+
+#Zadanie 1.2
+SHOW FULL TABLES;
+DESCRIBE film;
+
+#Zadanie 2.3
+SELECT title, length 
+FROM film 
+WHERE length IN (
+    SELECT length 
+    FROM (
+        SELECT DISTINCT length 
+        FROM film 
+        ORDER BY length ASC 
+        LIMIT 4
+    ) AS temp
+)
+ORDER BY length DESC;
+
+#Zadanie 3.4
+SELECT a.first_name, a.last_name
+FROM actor a 
+WHERE a.actor_id NOT IN (
+	SELECT fa.actor_id 
+    FROM film_actor fa 
+    JOIN film f ON fa.film_id = f.film_id 
+    WHERE f.title LIKE 'C%'
+);
+
+#Zadanie 3.5
+SELECT DISTINCT f.title, f.description
+FROM film f
+JOIN film_category fc ON f.film_id = fc.film_id 
+JOIN category c ON fc.category_id = c.category_id 
+JOIN inventory i ON f.film_id = i.film_id
+JOIN rental r ON i.inventory_id = r.inventory_id 
+WHERE c.name LIKE '%Action%'
+AND r.rental_date BETWEEN '2005-06-20' AND '2005-06-30'
+AND f.description NOT LIKE '%Drama%';
+
+#Zadanie 3.6
+SELECT DISTINCT f.title, c.name, r.rental_date, p.payment_date 
+FROM film f
+JOIN film_category fc ON f.film_id = fc.film_id 
+JOIN category c ON fc.category_id = c.category_id 
+JOIN inventory i ON f.film_id = i.film_id
+JOIN rental r ON i.inventory_id = r.inventory_id 
+JOIN payment p ON r.rental_id = p.rental_id 
+WHERE c.name LIKE '%Action%'
+AND DATE(r.rental_date) != DATE(p.payment_date);
+
+
+
+#Zadanie 4.7
+SELECT COUNT(*) AS customers_count 
+FROM (
+    SELECT customer_id 
+    FROM rental 
+    GROUP BY customer_id 
+    HAVING COUNT(rental_id) > (
+        SELECT COUNT(r2.rental_id) 
+        FROM rental r2 
+        JOIN customer c2 ON r2.customer_id = c2.customer_id 
+        WHERE c2.email = 'MARY.SMITH@sakilacustomer.org'
+    )
+) AS sub;
+
+#Zadanie 4.8
+SELECT DISTINCT c.first_name, c.last_name 
+FROM rental r 
+JOIN customer c ON r.customer_id = c.customer_id
+JOIN payment p ON p.rental_id = r.rental_id 
+GROUP BY c.customer_id, c.first_name, c.last_name 
+HAVING AVG(p.amount) < (
+	SELECT AVG(p2.amount) 
+	FROM payment p2 
+	WHERE DATE(p2.payment_date) = '2005-07-30'
+);
+
+#Zadanie 4.9
+SELECT fa1.actor_id , fa2.actor_id  
+FROM film_actor fa1  
+JOIN film_actor fa2 ON fa1.actor_id < fa2.actor_id  
+AND fa1.film_id = fa2.film_id 
+GROUP BY fa1.actor_id, fa2.actor_id  
+HAVING COUNT(fa1.film_id) > 2;
+
+#Zadanie 4.10
+SELECT a1.first_name , a1.last_name  , a2.first_name , a2.last_name , COUNT(fa1.film_id) AS movies_together
+FROM film_actor fa1  
+JOIN film_actor fa2 ON fa1.actor_id < fa2.actor_id  
+AND fa1.film_id = fa2.film_id 
+JOIN actor a1 ON fa1.actor_id  = a1.actor_id 
+JOIN actor a2 ON fa2.actor_id  = a2.actor_id 
+GROUP BY fa1.actor_id, a1.first_name , a1.last_name , fa2.actor_id, a2.first_name , a2.last_name   
+HAVING COUNT(fa1.film_id) > 2;
+
+#Zadanie 4.11
+SELECT a.last_name 
+FROM actor a 
+LEFT JOIN film_actor fa ON a.actor_id = fa.actor_id 
+LEFT JOIN film_category fc_h ON fa.film_id = fc_h.film_id 
+	AND fc_h.category_id =(SELECT category_id FROM category WHERE name = 'Horror')
+LEFT JOIN film_category fc_a ON fa.film_id = fc_a.film_id 
+	AND fc_a.category_id =(SELECT category_id FROM category WHERE name = 'Action')
+GROUP BY a.actor_id, a.last_name
+HAVING COUNT(fc_h.category_id ) > COUNT(fc_a.category_id );
+
+#Zadanie 5.12
+INSERT INTO language (name) VALUES ('Chinese');
+UPDATE film
+SET language_id = (SELECT language_id FROM language WHERE name = 'Chinese')
+WHERE film_id IN(
+	SELECT film_id FROM (
+        SELECT fc.film_id 
+        FROM film_category fc 
+        JOIN category c ON fc.category_id = c.category_id 
+        WHERE c.name = 'Action'
+    ) AS tmp
+);
+
+#Zadanie 5.13
+ALTER TABLE film ADD COLUMN rental_no INT;
+UPDATE film f
+SET rental_no = (
+	SELECT COUNT(r.rental_id)
+	FROM inventory i 
+	JOIN rental r ON i.inventory_id = r.inventory_id 
+	WHERE i.film_id = f.film_id
+);
+
+#Zadanie 5.14
+DESCRIBE rental;
+ALTER TABLE rental DROP COLUMN last_update;
+#staff_id mozna usunąc poniewaz jak sprawdzimy DESCRIBE rental; to zauwazymy ze jedynie rental_id jest primary Key, wiec staff_id mimo że kluczowe
+#do identyfikacji pracowników moze zostać usunięte
+

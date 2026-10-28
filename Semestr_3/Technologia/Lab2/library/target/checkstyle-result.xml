@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="9.3">
+<file name="/home/michal/Documents/Coding/Labs/Semestr_3/Technologia/Lab2/library/src/main/java/library/Copy.java">
+</file>
+<file name="/home/michal/Documents/Coding/Labs/Semestr_3/Technologia/Lab2/library/src/main/java/library/Book.java">
+</file>
+<file name="/home/michal/Documents/Coding/Labs/Semestr_3/Technologia/Lab2/library/src/main/java/library/User.java">
+</file>
+<file name="/home/michal/Documents/Coding/Labs/Semestr_3/Technologia/Lab2/library/src/main/java/library/InMemoryLibraryRepository.java">
+</file>
+<file name="/home/michal/Documents/Coding/Labs/Semestr_3/Technologia/Lab2/library/src/main/java/library/LibraryService.java">
+</file>
+</checkstyle>
